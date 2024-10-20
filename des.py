@@ -7,7 +7,7 @@ def encrypt(plaintext, key):
     cipher = DES.new(key, DES.MODE_CBC)
     
     # Pad the plaintext to be a multiple of the block size
-    padded_text = pad(plaintext.encode(), DES.block_size)
+    padded_text = pad(plaintext, DES.block_size)
     
     # Encrypt the padded plaintext
     ciphertext = cipher.encrypt(padded_text)
@@ -27,11 +27,11 @@ def decrypt(ciphertext, key, iv):
     decrypted_text = unpad(decrypted_padded_text, DES.block_size)
     
     # Return the decrypted plaintext as a string
-    return decrypted_text.decode()
+    return decrypted_text
 
 # Example usage
 key = b'abcdefgh'  # Key must be exactly 8 bytes for DES
-plaintext = "Hello, World!"
+plaintext = b"Hello, World!"
 
 # Encrypt the plaintext
 iv, ciphertext = encrypt(plaintext, key)
