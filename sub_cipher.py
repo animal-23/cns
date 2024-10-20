@@ -21,8 +21,3 @@ decrypted_text = decrypt(encrypted_text, cipher_key)
 print("Plaintext:", plaintext)
 print("Encrypted:",encrypted_text)
 print("Decrypted:",decrypted_text)
-
-#print(f"Cipher Key: {cipher_key}")
-print(f"Plaintext: {plaintext}")
-print(f"Encrypted: {encrypted_text}")
-print(f"Decrypted: {decrypted_text}")
