@@ -1,48 +1,31 @@
-# Initialize matrices
-keyMatrix = [[0] * 3 for i in range(3)]
-messageVector = [[0] for i in range(3)]
-cipher = [[0] for i in range(3)]
-
-# Function to generate the key matrix from the key string
+keyMatrix = [[0] * 3 for _ in range(3)]
+cipher = [[0] for _ in range(3)]
 def keyValue(key):
     k = 0
     for i in range(3):
         for j in range(3):
             keyMatrix[i][j] = ord(key[k]) % 65
             k += 1
-
-# Function to encrypt the message
 def encrypt(messageVector):
-    # Perform matrix multiplication between keyMatrix and messageVector
     for i in range(3):
-        for j in range(1):
-            cipher[i][j] = 0
-            for x in range(3):
-                cipher[i][j] += (keyMatrix[i][x] * messageVector[x][j])
-            cipher[i][j] = cipher[i][j] % 26
+        cipher[i][0] = sum(keyMatrix[i][x] * messageVector[x][0] for x in range(3)) % 26
 
-# Hill Cipher function to process the message and key
 def hillCipher(message, key):
-    # Generate the key matrix
     keyValue(key)
-    
-    # Generate the message vector from the message
-    for i in range(3):
-        messageVector[i][0] = ord(message[i]) % 65
-    
-    # Encrypt the message vector
-    encrypt(messageVector)
-    
-    # Generate the ciphertext from the cipher matrix
+    while len(message) % 3 != 0:
+        message += 'X'  
     cipherText = []
-    for i in range(3):
-        cipherText.append(chr(cipher[i][0] + 65))
-    
-    # Print the ciphertext
-    print("Cipher Text = ", "".join(cipherText))
+    for i in range(0, len(message), 3):
+        messageVector = [[ord(message[j]) % 65] for j in range(i, i + 3)]
+        encrypt(messageVector)
+        for i in range(3):
+            cipherText.append(chr(cipher[i][0] + 65))
+    return "".join(cipherText)
 
-# Example usage
-message = "SHR"  # Message must be of length 3
-key = "HGFDSAEWQ"  # Key must be of length 9 (3x3 matrix)
-hillCipher(message, key)
+key = input("Enter a key of length 9 (letters A-Z): ")
+while len(key) != 9 or not key.isalpha():
+    key = input("Invalid key. Please enter a key of length 9 (letters A-Z): ")
+message = input("Enter the plaintext to encrypt: ")
+cipherText = hillCipher(message.upper(), key.upper())
+print("Cipher Text =", cipherText)
 
