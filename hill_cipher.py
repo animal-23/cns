@@ -23,8 +23,6 @@ def hillCipher(message, key):
     return "".join(cipherText)
 
 key = input("Enter a key of length 9 (letters A-Z): ")
-while len(key) != 9 or not key.isalpha():
-    key = input("Invalid key. Please enter a key of length 9 (letters A-Z): ")
 message = input("Enter the plaintext to encrypt: ")
 cipherText = hillCipher(message.upper(), key.upper())
 print("Cipher Text =", cipherText)
