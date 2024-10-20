@@ -1,14 +1,23 @@
-def caeser(st,s):
-    result=""
-    for i in range(len(st)):
-        char=st[i]
-        if (char.isupper()):
-            result += chr((ord(char) + s-65) % 26 + 65)
+def encrypt(text, shift):
+    encrypted_text = ""
+    for char in text:
+        if char.isupper():
+            encrypted_text += chr((ord(char) + shift - 65) % 26 + 65)
+        elif char.islower():
+            encrypted_text += chr((ord(char) + shift - 97) % 26 + 97)
         else:
-            result += chr((ord(char) + s- 97) % 26 + 97)
-    return result
-st="HELLO"
-s=3
-print ("Text : " + st)
-print ("Shift : " + str(s))
-print ("Cipher: " + caeser(st,s))
+            encrypted_text += char
+    return encrypted_text
+
+def decrypt(text, shift):
+    return encrypt(text, -shift)
+
+message = "Hello world"
+shift = 3 
+
+encrypted_message = encrypt(message, shift)
+print("Encrypted:", encrypted_message)
+
+decrypted_message = decrypt(encrypted_message, shift)
+print("Decrypted:", decrypted_message)
+
