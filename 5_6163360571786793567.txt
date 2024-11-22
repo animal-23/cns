@@ -1,0 +1,151 @@
+CNS PROGRAMS
+
+1. RSA
+
+def gcd(a,b):
+    while b!=0:
+        a,b=b,a%b
+    return a
+
+def RSA(p,q,msg):
+    n=p*q
+    phi=(p-1)*(q-1)
+    for i in range(2,phi):
+        if gcd(i,phi)==1:
+            e=i
+            break
+    j=0
+    while 1:
+        if(j*e)%phi==1:
+            d=j
+            break
+        j+=1
+    ct=(msg**e)%n
+    print("Encrypted message is ",ct)
+    pt=(ct**d)%n
+    print("Decrypted message is ",pt)
+p=int(input("Enter the prime number:"))
+q=int(input("Enter the prime number:"))
+msg=int(input("Enter the message:"))
+RSA(p,q,msg)
+
+2. Diffie Hellman
+
+import random
+
+# Function to perform modular exponentiation (base^exp % mod)
+def mod_exp(base, exp, mod):
+    result = 1
+    while exp > 0:
+        if exp % 2 == 1:
+            result = (result * base) % mod
+        base = (base * base) % mod
+        exp = exp // 2
+    return result
+
+# Function to simulate Diffie-Hellman Key Exchange
+def diffie_hellman():
+    # Publicly known prime number (p) and base (g)
+    p = 23  # A small prime number for demonstration purposes
+    g = 5   # A small primitive root modulo p
+
+    # Each party chooses a private key (a and b are private)
+    alice_private_key = random.randint(1, p - 1)  # Alice's private key
+    bob_private_key = random.randint(1, p - 1)    # Bob's private key
+
+    # Each party computes their public key to send over the insecure channel
+    alice_public_key = mod_exp(g, alice_private_key, p)
+    bob_public_key = mod_exp(g, bob_private_key, p)
+
+    # Each party computes the shared secret key using the other's public key
+    alice_shared_secret = mod_exp(bob_public_key, alice_private_key, p)
+    bob_shared_secret = mod_exp(alice_public_key, bob_private_key, p)
+
+    # Display results
+    print("Publicly Shared Prime (p):", p)
+    print("Publicly Shared Base (g):", g)
+    print("\n--- Alice's Information ---")
+    print("Alice's Private Key:", alice_private_key)
+    print("Alice's Public Key:", alice_public_key)
+    print("\n--- Bob's Information ---")
+    print("Bob's Private Key:", bob_private_key)
+    print("Bob's Public Key:", bob_public_key)
+    print("\n--- Shared Secret Key ---")
+    print("Shared Secret (calculated by Alice):", alice_shared_secret)
+    print("Shared Secret (calculated by Bob):", bob_shared_secret)
+
+    # Check if the shared secrets match
+    if alice_shared_secret == bob_shared_secret:
+        print("\nSuccess! Both shared secrets match.")
+    else:
+        print("\nError! Shared secrets do not match.")
+
+# Run the Diffie-Hellman Key Exchange simulation
+diffie_hellman()
+
+
+
+3. Message digest of SHA1
+
+import hashlib
+def calculate_sha1(text):
+    text_bytes=text.encode()
+    sha1_hash=hashlib.sha1()
+    sha1_hash.update(text_bytes)
+    digest=sha1_hash.hexdigest()
+    return digest
+text=input("Enter the text:")
+sha1_digest=calculate_sha1(text)
+print(sha1_digest)
+
+
+
+
+4. Message digest of md5
+
+import hashlib
+def calculate_md5(text):
+    text_bytes=text.encode()
+    md5_hash=hashlib.md5()
+    md5_hash.update(text_bytes)
+    digest=md5_hash.hexdigest()
+    return digest
+text=input("enter the text:")
+print(calculate_md5(text))
+
+
+5. Rail Fence 
+
+def rail_fence_encrypt(message, num_rails):
+    fence = [['' for _ in range(len(message))] for _ in range(num_rails)]
+    row, col, down = 0, 0, False
+    for char in message:
+        fence[row][col] = char
+        col += 1
+        if row == 0 or row == num_rails - 1: down = not down
+        row = row + 1 if down else row - 1
+    return ''.join(''.join(r) for r in fence)
+
+message = input("Enter message: ")
+rails = int(input("Enter number of rails: "))
+print("Encrypted message:", rail_fence_encrypt(message, rails))
+
+6. GCD and Extended GCD
+
+def gcd(a,b):
+    while b!=0:
+        a,b=b,a%b
+    return a
+def extended_gcd(a,b):
+    if a==0:
+        return b,0,1
+    Gcd,x1,y1=extended_gcd(b%a,a)
+    x=y1-(b//a)*x1
+    y=x1
+    return Gcd,x,y
+a,b=35,15
+print(gcd(a,b))
+GCD,x,y=extended_gcd(a,b)
+print(GCD)
+
+

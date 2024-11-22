@@ -1,0 +1,208 @@
+1.
+ 
+s="Hello world"
+result=''.join(chr(ord(c)^0) for c in s)
+print(result)
+
+2.
+
+s="Hello world"
+result1=''.join(chr(ord(c)^127) for c in s)
+result2=''.join(chr(ord(c)&127) for c in s)
+result3=''.join(chr(ord(c)|127) for c in s)
+print(result1)
+print(result2)
+print(result3)
+
+3. Caser Cipher
+
+def caser_cipher(text,shift):
+    result=""
+    for char in text:
+        if char.isupper():
+            result+=chr((ord(char)-65+shift)%26+65)
+        elif char.islower():
+            result+=chr((ord(char)-97+shift)%26+97)
+        else:
+            result+=char
+    return result
+encrypted=caser_cipher("Salaar Devaratha Raisaar",3)
+decrypted=caser_cipher(encrypted,-3)
+print(encrypted)
+print(decrypted)
+
+4. Substitution Cipher
+
+def substitution_cipher(text,key,decrypt=False):
+    if decrypt:
+        reverse="ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        key=''.join(reverse[key.index(chr(i))] for i in range(65,91))
+    result=""
+    for char in text:
+        if char.isupper():
+            result+=key[ord(char)-65]
+        elif char.islower():
+            result+=key[ord(char)-97].lower()
+        else:
+            result+=char
+    return result
+key="QWERTYUIOPASDFGHJKLZXCVBNM"
+encrypted=substitution_cipher("Rebel Star",key)
+decrypted=substitution_cipher(encrypted,key,decrypt=True)
+print(encrypted)
+print(decrypted)
+
+5.RC4
+
+def rc4(key,plaintext):
+    s=list(range(256))
+    j=0
+    
+    for i in range(256):
+        j=(j+s[i]+key[i%len(key)])%256
+        s[i], s[j]=s[j], s[i]
+    i=j=0
+    ciphertext=''
+    for c in plaintext:
+        i=(i+1)%256
+        j=(j+s[i])%256
+        s[i], s[j]=s[j], s[i]
+        ciphertext+=chr(ord(c) ^ s[(s[i]+s[j])%256])
+    return ciphertext
+def main():
+    key = b"secretkey"
+    plaintext = "Salaar"             
+    ciphertext = rc4(key, plaintext)
+    decrypted = rc4(key, ciphertext)
+    print("Ciphertext:", ''.join([chr(ord(c) ^ 256) for c in ciphertext]))  # Not hex, just raw chars
+    print("Decrypted:", decrypted)
+
+if __name__ == "__main__":
+    main()
+
+6.Blowfish
+
+from Crypto.Cipher import Blowfish
+from Crypto.Util.Padding import pad,unpad
+from Crypto.Random import get_random_bytes
+key=b'secretkey'
+iv=get_random_bytes(8)
+cipher=Blowfish.new(key,Blowfish.MODE_CBC,iv)
+ciphertext=iv+cipher.encrypt(pad(b'Salaar',Blowfish.block_size))
+cipher_decrypt=Blowfish.new(key,Blowfish.MODE_CBC,ciphertext[:8])
+decrypted=unpad(cipher_decrypt.decrypt(ciphertext[8:]),Blowfish.block_size)
+print(ciphertext)
+print(decrypted.decode())
+
+7. DES
+
+from Crypto.Cipher import DES
+from Crypto.Util.Padding import pad,unpad
+key=b'8bytekey'
+cipher=DES.new(key,DES.MODE_CBC)
+iv=cipher.iv
+plaintext=b'Salaar'
+ciphertext=iv+cipher.encrypt(pad(plaintext,DES.block_size))
+ciphertext_decrypt=DES.new(key,DES.MODE_CBC,iv)
+decrypted=unpad(ciphertext_decrypt.decrypt(ciphertext[8:]),DES.block_size)
+print(ciphertext)
+print(decrypted.decode())
+
+8. AES
+
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad,unpad
+from Crypto.Random import get_random_bytes
+key=get_random_bytes(16)
+cipher=AES.new(key,AES.MODE_CBC)
+iv=cipher.iv
+ciphertext=iv+cipher.encrypt(pad(b'Salaar',AES.block_size))
+ciphertext_decrypt=AES.new(key,AES.MODE_CBC,iv)
+decrypted=unpad(ciphertext_decrypt.decrypt(ciphertext[16:]),AES.block_size)
+print(ciphertext)
+print(decrypted.decode())
+
+9. Hill cipher
+
+def hill_encrypt(message,key):
+    key_matrix=[[ord(key[i*3+j])% 65 for j in range(3)] for i in range(3)]
+    message=message.upper().ljust(3,'X')
+    message_vector=[ord(c) % 65 for c in message]
+    ciphertext=''.join(chr(sum(key_matrix[i][j]*message_vector[j] for j in range(3)) % 26 +65) for i in range(3))
+    return ciphertext
+key="QWERTYUIO"
+ciphertext=hill_encrypt("Helo",key)
+print(ciphertext)
+
+
+10. Playfair cipher
+
+def playfair_cipher(plaintext, key, mode):  
+    alphabet = 'abcdefghiklmnopqrstuvwxyz'    
+    key = key.lower().replace(' ', '').replace('j', 'i')  
+    key_square = ''
+    for letter in key + alphabet:  
+        if letter not in key_square:  
+            key_square += letter    
+    plaintext = plaintext.lower().replace(' ', '').replace('j', 'i')  
+    if len(plaintext) % 2 == 1:  
+        plaintext += 'x'  
+    digraphs = [plaintext[i:i + 2] for i in range(0, len(plaintext), 2)]    
+    def encrypt(digraph):  
+        a, b = digraph  
+        row_a, col_a = divmod(key_square.index(a), 5)  
+        row_b, col_b = divmod(key_square.index(b), 5)  
+        if row_a == row_b:  
+            col_a = (col_a + 1) % 5  
+            col_b = (col_b + 1) % 5  
+        elif col_a == col_b:  
+            row_a = (row_a + 1) % 5  
+            row_b = (row_b + 1) % 5  
+        else:  
+            col_a, col_b = col_b, col_a  
+        return key_square[row_a * 5 + col_a] + key_square[row_b * 5 + col_b]  
+    def decrypt(digraph):  
+        a, b = digraph  
+        row_a, col_a = divmod(key_square.index(a), 5)  
+        row_b, col_b = divmod(key_square.index(b), 5)  
+        if row_a == row_b:  
+            col_a = (col_a - 1) % 5  
+            col_b = (col_b - 1) % 5  
+        elif col_a == col_b:  
+            row_a = (row_a - 1) % 5  
+            row_b = (row_b - 1) % 5  
+        else:  
+            col_a, col_b = col_b, col_a  
+        return key_square[row_a * 5 + col_a] + key_square[row_b * 5 + col_b]    
+    result = ''  
+    for digraph in digraphs:  
+        if mode == 'encrypt':  
+            result += encrypt(digraph)  
+        elif mode == 'decrypt':  
+            result += decrypt(digraph)    
+    return result    
+plaintext = 'Salaar'  
+key = 'example key'  
+ciphertext = playfair_cipher(plaintext, key, 'encrypt')  
+print(ciphertext)    
+decrypted_text = playfair_cipher(ciphertext, key, 'decrypt')  
+print(decrypted_text)  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
